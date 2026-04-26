@@ -1,0 +1,33 @@
+&am33xx_pinmux
+{
+
+	myGPIO:myGPIO{
+		pinctrl-single,pins = <
+
+		 /* LED pin: gpio1_24 → GPMC_AD8 */
+        AM33XX_PADCONF(AM335X_PIN_GPMC_AD8, PIN_OUTPUT, MUX_MODE7)
+		AM33XX_PADCONF(AM335X_PIN_GPMC_ADVN_ALE,PIN_INPUT_PULLUP,MUX_MODE7)
+		>;
+	};
+};
+
+
+/{
+
+	gpio_devs
+	{
+		compatible = "org,custom-gpio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&myGPIO>;
+
+		
+
+		irq-gpios = <&gpio2 2 GPIO_ACTIVE_LOW>;
+
+		user-led-gpios = <&gpio1 24 GPIO_ACTIVE_HIGH>;
+
+		interrupt-parent = <&gpio2>;
+		interrupts = <2 IRQ_TYPE_EDGE_FALLING>;
+
+	};
+};

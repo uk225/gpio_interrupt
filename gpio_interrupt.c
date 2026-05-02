@@ -10,6 +10,16 @@ static const struct of_device_id my_device_match[] = {
     { .compatible = "org,custom-gpio" },
     { }
 };
+
+/*
+At Compile Time: The MODULE_DEVICE_TABLE macro exports the list of supported device IDs into the driver's metadata (inside the .ko file).
+
+Depmod: A utility called depmod scans all drivers and creates a map file (like modules.alias).
+
+At Runtime: When you plug in hardware, udev or kmod looks at that map file and automatically runs modprobe for the correct driver.
+
+
+*/
 MODULE_DEVICE_TABLE(of, my_device_match);
 struct gpio_desc *led_gpio;
 static int status = 1;

@@ -17,8 +17,14 @@ static int status = 1;
 static irqreturn_t my_irq_handler(int irq, void *dev_id)
 {
     pr_info("Interrupt fired!\n");
-    gpiod_set_value(led_gpio,(status++)%2);
 
+    return IRQ_WAKE_THREAD;
+}
+
+static irqreturn_t process_context_method(int irq,void *dev_id)
+{
+    pr_info("Process Context\n");
+    gpiod_set_value(led_gpio,(status++)%2);
     return IRQ_HANDLED;
 }
 
@@ -43,10 +49,19 @@ static int gpio_probe(struct platform_device *pdev)
     irq = gpiod_to_irq(irq_gpio);
     if (irq < 0)
         return irq;
-
+    /*
     ret = devm_request_irq(&pdev->dev, irq, my_irq_handler,
                            IRQF_TRIGGER_FALLING,
                            "gpio_irq", &pdev->dev);
+    */
+
+    ret = devm_request_threaded_irq(&pdev->dev,irq,
+                                    my_irq_handler,
+                                    process_context_method,
+                                    IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+                                    "gpio_irq",
+                                    NULL
+                                    );
     if (ret)
         return ret;
 
